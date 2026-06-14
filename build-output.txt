@@ -1,0 +1,17 @@
+[ERROR] COMPILATION ERROR : 
+[ERROR] /C:/Users/HP/Desktop/meilvay/src/main/java/com/furkan/trendyoliki/service/CategoryImpl.java:[13,8] com.furkan.trendyoliki.service.CategoryImpl is not abstract and does not override abstract method findAll() in com.furkan.trendyoliki.service.CategoryService
+[ERROR] /C:/Users/HP/Desktop/meilvay/src/main/java/com/furkan/trendyoliki/service/CategoryImpl.java:[22,27] findAll() in com.furkan.trendyoliki.service.CategoryImpl cannot implement findAll() in com.furkan.trendyoliki.service.CategoryService
+  return type java.util.List<com.furkan.trendyoliki.entity.Category> is not compatible with java.util.List<java.util.Locale.Category>
+[ERROR] /C:/Users/HP/Desktop/meilvay/src/main/java/com/furkan/trendyoliki/service/CategoryImpl.java:[21,5] method does not override or implement a method from a supertype
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.14.1:compile (default-compile) on project demoTrendyol: Compilation failure: Compilation failure: 
+[ERROR] /C:/Users/HP/Desktop/meilvay/src/main/java/com/furkan/trendyoliki/service/CategoryImpl.java:[13,8] com.furkan.trendyoliki.service.CategoryImpl is not abstract and does not override abstract method findAll() in com.furkan.trendyoliki.service.CategoryService
+[ERROR] /C:/Users/HP/Desktop/meilvay/src/main/java/com/furkan/trendyoliki/service/CategoryImpl.java:[22,27] findAll() in com.furkan.trendyoliki.service.CategoryImpl cannot implement findAll() in com.furkan.trendyoliki.service.CategoryService
+[ERROR]   return type java.util.List<com.furkan.trendyoliki.entity.Category> is not compatible with java.util.List<java.util.Locale.Category>
+[ERROR] /C:/Users/HP/Desktop/meilvay/src/main/java/com/furkan/trendyoliki/service/CategoryImpl.java:[21,5] method does not override or implement a method from a supertype
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
