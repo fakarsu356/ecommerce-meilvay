@@ -1,0 +1,240 @@
+//ai generated
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trendyoliki</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        
+        nav { background: #FF6000; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        nav h1 { color: white; font-size: 24px; }
+        .nav-right { display: flex; gap: 10px; align-items: center; }
+        .nav-right a { text-decoration: none; background: white; color: #FF6000; padding: 8px 16px; border-radius: 4px; font-weight: bold; }
+        .cart-icon { position: relative; cursor: pointer; }
+        .cart-icon span { font-size: 24px; }
+        .cart-badge { position: absolute; top: -8px; right: -8px; background: white; color: #FF6000; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+
+        .filters-bar { background: white; border-radius: 10px; padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; }
+
+        .filter-group { display: flex; flex-direction: column; gap: 6px; }
+        .filter-group label { font-size: 13px; font-weight: bold; color: #555; }
+        .filter-group input, .filter-group select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; outline: none; }
+        .filter-group input:focus, .filter-group select:focus { border-color: #FF6000; }
+
+        .filter-btn { padding: 9px 20px; background: #FF6000; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .filter-btn:hover { background: #e55500; }
+        .reset-btn { padding: 9px 20px; background: white; color: #FF6000; border: 2px solid #FF6000; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .reset-btn:hover { background: #fff5f0; }
+
+        .category-filters { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .cat-btn { padding: 7px 16px; border: 2px solid #FF6000; border-radius: 20px; background: white; color: #FF6000; cursor: pointer; font-weight: bold; transition: all 0.2s; font-size: 13px; }
+        .cat-btn:hover, .cat-btn.active { background: #FF6000; color: white; }
+
+        .results-info { color: #888; font-size: 14px; margin-bottom: 15px; }
+
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        
+        .product-card { background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s; }
+        .product-card:hover { transform: translateY(-4px); }
+        .product-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 4px; background: #eee; }
+        .product-card h3 { margin-top: 10px; font-size: 15px; color: #333; }
+        .product-card .price { color: #FF6000; font-weight: bold; font-size: 18px; margin-top: 6px; }
+        .product-card .stock { color: #888; font-size: 13px; margin-top: 4px; }
+
+        .loading { text-align: center; padding: 50px; color: #888; font-size: 18px; }
+        .error { text-align: center; padding: 50px; color: red; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <h1>🛍️ Trendyoliki</h1>
+        <div class="nav-right">
+            <div class="cart-icon" onclick="window.location.href='cart.html'">
+                <span>🛒</span>
+                <div class="cart-badge" id="cart-badge">0</div>
+            </div>
+            <a href="login.html" id="login-btn">Giriş Yap</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- FİLTRELER -->
+        <div class="filters-bar">
+            <div class="filter-group">
+                <label>Min Fiyat (₺)</label>
+                <input type="number" id="min-price" placeholder="0" min="0">
+            </div>
+            <div class="filter-group">
+                <label>Max Fiyat (₺)</label>
+                <input type="number" id="max-price" placeholder="99999" min="0">
+            </div>
+            <div class="filter-group">
+                <label>Sıralama</label>
+                <select id="sort">
+                    <option value="">Varsayılan</option>
+                    <option value="price-asc">Fiyat: Düşükten Yükseğe</option>
+                    <option value="price-desc">Fiyat: Yüksekten Düşüğe</option>
+                    <option value="name-asc">İsim: A-Z</option>
+                    <option value="name-desc">İsim: Z-A</option>
+                    <option value="stock-desc">Stok: Çoktan Aza</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Stok Durumu</label>
+                <select id="stock-filter">
+                    <option value="">Tümü</option>
+                    <option value="in-stock">Stokta Var</option>
+                    <option value="out-stock">Stok Tükendi</option>
+                </select>
+            </div>
+            <button class="filter-btn" onclick="applyFilters()">🔍 Filtrele</button>
+            <button class="reset-btn" onclick="resetFilters()">↺ Sıfırla</button>
+        </div>
+
+        <!-- KATEGORİ FİLTRELERİ -->
+        <div class="category-filters" id="category-filters">
+            <button class="cat-btn active" onclick="filterByCategory(null, this)">Tümü</button>
+        </div>
+
+        <!-- SONUÇ BİLGİSİ -->
+        <p class="results-info" id="results-info"></p>
+
+        <!-- ÜRÜNLER -->
+        <div id="products-container" class="products-grid">
+            <p class="loading">Ürünler yükleniyor...</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:8080/api";
+        let allProducts = [];
+        let selectedCategoryId = null;
+
+        // Giriş kontrolü
+        const auth = localStorage.getItem("auth");
+        const username = localStorage.getItem("username");
+        if (auth && username) {
+            const loginBtn = document.getElementById("login-btn");
+            loginBtn.textContent = username + " | Çıkış";
+            loginBtn.onclick = () => {
+                localStorage.removeItem("auth");
+                localStorage.removeItem("username");
+                window.location.reload();
+            };
+        }
+
+        async function loadProducts() {
+            try {
+                const response = await fetch(`${API_URL}/products`);
+                allProducts = await response.json();
+                applyFilters();
+                loadCategories();
+            } catch (error) {
+                document.getElementById("products-container").innerHTML =
+                    `<p class="error">Ürünler yüklenemedi: ${error.message}</p>`;
+            }
+        }
+
+        async function loadCategories() {
+            try {
+                const response = await fetch(`${API_URL}/categories`);
+                const categories = await response.json();
+                const filtersDiv = document.getElementById("category-filters");
+
+                categories.forEach(cat => {
+                    const btn = document.createElement("button");
+                    btn.className = "cat-btn";
+                    btn.textContent = cat.name;
+                    btn.onclick = () => filterByCategory(cat.id, btn);
+                    filtersDiv.appendChild(btn);
+                });
+            } catch (error) {
+                console.log("Kategoriler yüklenemedi");
+            }
+        }
+
+        function filterByCategory(categoryId, clickedBtn) {
+            selectedCategoryId = categoryId;
+            document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
+            clickedBtn.classList.add("active");
+            applyFilters();
+        }
+
+        function applyFilters() {
+            let filtered = [...allProducts];
+
+            // Kategori filtresi
+            if (selectedCategoryId !== null) {
+                filtered = filtered.filter(p => p.category && p.category.id === selectedCategoryId);
+            }
+
+            // Fiyat filtresi
+            const minPrice = parseFloat(document.getElementById("min-price").value) || 0;
+            const maxPrice = parseFloat(document.getElementById("max-price").value) || Infinity;
+            filtered = filtered.filter(p => p.price >= minPrice && p.price <= maxPrice);
+
+            // Stok filtresi
+            const stockFilter = document.getElementById("stock-filter").value;
+            if (stockFilter === "in-stock") filtered = filtered.filter(p => p.stock > 0);
+            if (stockFilter === "out-stock") filtered = filtered.filter(p => p.stock === 0);
+
+            // Sıralama
+            const sort = document.getElementById("sort").value;
+            if (sort === "price-asc") filtered.sort((a, b) => a.price - b.price);
+            if (sort === "price-desc") filtered.sort((a, b) => b.price - a.price);
+            if (sort === "name-asc") filtered.sort((a, b) => a.name.localeCompare(b.name));
+            if (sort === "name-desc") filtered.sort((a, b) => b.name.localeCompare(a.name));
+            if (sort === "stock-desc") filtered.sort((a, b) => b.stock - a.stock);
+
+            renderProducts(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById("min-price").value = "";
+            document.getElementById("max-price").value = "";
+            document.getElementById("sort").value = "";
+            document.getElementById("stock-filter").value = "";
+            selectedCategoryId = null;
+            document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
+            document.querySelector(".cat-btn").classList.add("active");
+            applyFilters();
+        }
+
+        function renderProducts(products) {
+            const container = document.getElementById("products-container");
+            document.getElementById("results-info").textContent = `${products.length} ürün bulundu`;
+            container.innerHTML = "";
+
+            if (products.length === 0) {
+                container.innerHTML = `<p class="loading">Bu kriterlere uygun ürün bulunamadı.</p>`;
+                return;
+            }
+
+            products.forEach(product => {
+                const card = document.createElement("div");
+                card.className = "product-card";
+                card.innerHTML = `
+                    <img src="${product.image_url ? product.image_url : 'https://via.placeholder.com/220x180?text=Resim+Yok'}" alt="${product.name}">
+                    <h3>${product.name}</h3>
+                    <div class="price">${product.price.toLocaleString('tr-TR')} ₺</div>
+                    <div class="stock">${product.stock > 0 ? 'Stok: ' + product.stock : '❌ Stok tükendi'}</div>
+                `;
+                card.onclick = () => {
+                    localStorage.setItem("selectedProduct", JSON.stringify(product));
+                    window.location.href = "product-detail.html";
+                };
+                container.appendChild(card);
+            });
+        }
+
+        loadProducts();
+    </script>
+</body>
+</html>

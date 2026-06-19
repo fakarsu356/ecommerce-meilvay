@@ -50,6 +50,22 @@ public class ProductImpl implements  ProductService {
     public void deleteById(int id) {
       productRepository.deleteById(id);
     }
+
+    @Override
+    public List<Product> searchByName(String name) {
+      List<Product> list=productRepository.findByName(name);
+      return list;
+    }
+
+    @Override
+    public List<Product> findByCategory(Integer categoryId) {
+      return productRepository.findByCategoryId(categoryId);
+    }
+
+    @Override
+    public List<Product> findByPriceRange(Double min, Double max) {
+        return productRepository.findByPriceBetween(min, max);
+    }
     
 }
 // Fiyat 0'dan büyük olmalı

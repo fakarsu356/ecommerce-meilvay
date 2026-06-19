@@ -30,7 +30,7 @@ public class Product {
     private Category category;
     
     @Column(name="stock")
-    private int stock;
+    private Integer stock;
 
     @ManyToOne 
     @JoinColumn(name="seller_id") 
@@ -64,13 +64,13 @@ public class Product {
     public void setCategory(Category category) {
         this.category = category;
     }
-    public int getStock() {
+    public Integer getStock() {
         return stock;
     }
-    public void setStock(int stock) {
+    public void setStock(Integer stock) {
         this.stock = stock;
     }
-    public Product(Integer id, String name,String description, Double price, Category category, int stock, User seller_id,
+    public Product(Integer id, String name,String description, Double price, Category category, Integer stock, User seller_id,
             String image_url) {
         this.id = id;
         this.name = name;

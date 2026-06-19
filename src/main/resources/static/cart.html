@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sepetim - Trendyoliki</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        
+        nav { background: #FF6000; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        nav h1 { color: white; font-size: 24px; cursor: pointer; }
+        nav a { color: white; text-decoration: none; font-weight: bold; }
+
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+
+        h2 { margin-bottom: 20px; color: #333; }
+
+        .cart-item { background: white; border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 20px; }
+        .cart-item img { width: 80px; height: 80px; object-fit: cover; border-radius: 6px; }
+        .cart-item-info { flex: 1; }
+        .cart-item-info h3 { color: #333; margin-bottom: 5px; }
+        .cart-item-info .price { color: #FF6000; font-weight: bold; font-size: 18px; }
+        .cart-item-info .quantity { color: #888; font-size: 14px; margin-top: 4px; }
+        .delete-btn { background: #ff4444; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .delete-btn:hover { background: #cc0000; }
+
+        .cart-summary { background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 20px; }
+        .cart-summary h3 { color: #333; margin-bottom: 15px; font-size: 20px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; color: #555; }
+        .summary-total { display: flex; justify-content: space-between; font-size: 22px; font-weight: bold; color: #FF6000; border-top: 2px solid #eee; padding-top: 15px; margin-top: 10px; }
+        .order-btn { width: 100%; padding: 14px; background: #FF6000; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .order-btn:hover { background: #e55500; }
+
+        .empty { text-align: center; padding: 60px; color: #888; font-size: 18px; }
+        .login-warning { text-align: center; padding: 60px; }
+        .login-warning a { color: #FF6000; font-weight: bold; }
+
+        .success-msg { color: green; text-align: center; margin-top: 15px; font-weight: bold; display: none; }
+        .error-msg { color: red; text-align: center; margin-top: 15px; display: none; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <h1 onclick="window.location.href='index.html'">🛍️ Trendyoliki</h1>
+        <a href="index.html">← Ana Sayfa</a>
+    </nav>
+
+    <div class="container">
+        <h2>🛒 Sepetim</h2>
+        <div id="cart-container"></div>
+        <p class="success-msg" id="success-msg">✅ Sipariş verildi!</p>
+        <p class="error-msg" id="error-msg"></p>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:8080/api";
+        const auth = localStorage.getItem("auth");
+
+        if (!auth) {
+            document.getElementById("cart-container").innerHTML = `
+                <div class="login-warning">
+                    <p>Sepetinizi görmek için <a href="login.html">giriş yapın</a>.</p>
+                </div>
+            `;
+        } else {
+            loadCart();
+        }
+
+        async function loadCart() {
+            try {
+                const response = await fetch(`${API_URL}/cartItems`, {
+                    headers: { "Authorization": `Basic ${auth}` }
+                });
+
+                if(response.ok) {
+                    const items = await response.json();
+                    renderCart(items);
+                } else {
+                    throw new Error("Sunucu hatası");
+                }
+            } catch (error) {
+                document.getElementById("cart-container").innerHTML = 
+                    `<p class="empty">Sepet yüklenemedi. (Hata: Sunucu bağlantısı)</p>`;
+            }
+        }
+
+        function renderCart(items) {
+            const container = document.getElementById("cart-container");
+
+            if (!items || items.length === 0) {
+                container.innerHTML = `<p class="empty">Sepetiniz boş. <a href="index.html" style="color:#FF6000">Alışverişe başla!</a></p>`;
+                return;
+            }
+
+            let total = 0;
+            let html = "";
+
+            items.forEach(item => {
+                const itemTotal = item.product.price * item.quantity;
+                total += itemTotal;
+                
+                // DÜZELTME: imageUrl kontrolü eklendi
+                const imgLink = item.product.imageUrl || item.product.image_url;
+
+                html += `
+                    <div class="cart-item">
+                        <img src="${imgLink ? imgLink : 'https://via.placeholder.com/80x80?text=Resim'}" alt="${item.product.name}">
+                        <div class="cart-item-info">
+                            <h3>${item.product.name}</h3>
+                            <div class="price">${item.product.price.toLocaleString('tr-TR')} ₺</div>
+                            <div class="quantity">Adet: ${item.quantity}</div>
+                        </div>
+                        <button class="delete-btn" onclick="deleteItem(${item.id})">🗑️ Sil</button>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div class="cart-summary">
+                    <h3>Sipariş Özeti</h3>
+                    <div class="summary-row"><span>Ürünler</span><span>${items.length} adet</span></div>
+                    <div class="summary-total"><span>Toplam</span><span>${total.toLocaleString('tr-TR')} ₺</span></div>
+                    <button class="order-btn" onclick="placeOrder()">🛍️ Sipariş Ver</button>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        async function deleteItem(id) {
+            try {
+                await fetch(`${API_URL}/cartItems/${id}`, {
+                    method: "DELETE",
+                    headers: { "Authorization": `Basic ${auth}` }
+                });
+                loadCart();
+            } catch (error) {
+                console.log("Silme hatası:", error);
+            }
+        }
+
+        async function placeOrder() {
+            try {
+                const response = await fetch(`${API_URL}/orders`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Basic ${auth}`
+                    },
+                    body: JSON.stringify({})
+                });
+
+                if (response.ok) {
+                    document.getElementById("success-msg").style.display = "block";
+                    setTimeout(() => loadCart(), 1500);
+                } else {
+                    document.getElementById("error-msg").style.display = "block";
+                    document.getElementById("error-msg").textContent = "❌ Sipariş verilemedi!";
+                }
+            } catch (error) {
+                document.getElementById("error-msg").style.display = "block";
+                document.getElementById("error-msg").textContent = "❌ Sunucuya bağlanılamadı!";
+            }
+        }
+    </script>
+</body>
+</html>

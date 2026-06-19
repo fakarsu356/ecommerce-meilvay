@@ -2,6 +2,8 @@ package com.furkan.trendyoliki.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,8 +19,8 @@ public class User {
     private Integer id;
 
      @NotNull
-    @Column(name="name")
-    private  String name;
+    @Column(name="username")
+    private  String username;
     @NotNull
     @Column(name="password")
     private String password;
@@ -26,12 +28,13 @@ public class User {
     @Column(name="email")
     private String email;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="role")
     private Role role;
 
-    public User(Integer id, String name, String password, String email,Role role) {
+    public User(Integer id, String username, String password, String email,Role role) {
         this.id = id;
-        this.name = name;
+        this.username = username;
         this.password = password;
         this.email = email;
         this.role=role;
@@ -42,11 +45,11 @@ public class User {
     public void setId(Integer id) {
         this.id = id;
     }
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
-    public void setName(String name) {
-        this.name = name;
+    public void setuserName(String username) {
+        this.username = username;
     }
     public String getPassword() {
         return password;
@@ -62,4 +65,11 @@ public class User {
     }
     public User() {
     }
+    public Role getRole() {
+        return role;
+    }
+    public void setRole(Role role) {
+        this.role = role;
+    }
 }
+//bersu.ansen@komtas.com

@@ -6,7 +6,8 @@ import com.furkan.trendyoliki.entity.CartItem;
 
 public interface CartItemService {
 List<CartItem> findAll();   
-CartItem findById(int id);
 CartItem save(CartItem cartItem);
 void deleteById(int id); 
+List<CartItem> findByCustomerId(int id);
+CartItem findById(int id);
 }
